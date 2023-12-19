@@ -17,7 +17,7 @@ def take_user_number() -> None:
     except ValueError as er:
         raise print(f"{er}")
 
-    return 0
+    return None
 
 
 def look_in_terminal(output_list: list) -> None:
@@ -48,14 +48,15 @@ def prime_control(user_numbers, default_prime_list: list):
     default_prime_list.insert(0, 2)
     save_prime_list(default_prime_list)
     look_in_terminal(default_prime_list)
-    return 0
+    
+    return None
 
 
 def save_prime_list(save_list: list):
     with open('saved_prime_list.pkl', 'wb') as temp_list:
         pickle.dump(save_list, temp_list)
 
-    return 0
+    return None
 
 
 def load_prime_list(user_number) -> list or None:
