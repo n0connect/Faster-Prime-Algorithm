@@ -11,19 +11,22 @@ def take_user_number() -> None:
     a certain range to determine the status of other numbers.
 
     """)
-    selected_number: int = int(input("Enter a number (number>=2000): "))
-    load_prime_list(selected_number)
+    try:
+        selected_number: int = int(input("Enter a number (number>=2000): "))
+        load_prime_list(selected_number)
+    except ValueError as er:
+        raise print(f"{er}")
 
-    return print("Done_Success_take_user_number")
+    return 0
 
 
-def w_in_terminal(output_list: list) -> None:
+def look_in_terminal(output_list: list) -> None:
     counter: int = 0
     for item in output_list:
         counter = counter + 1
         print(item, end="\n" if counter % 10 == 1 else ",")
 
-    return print("Done_Success_w_in_terminal")
+    return print("\nDone_Success_w_in_terminal")
 
 
 def process_bar(number,user_numbers):
@@ -44,22 +47,25 @@ def prime_control(user_numbers, default_prime_list: list):
 
     default_prime_list.insert(0, 2)
     save_prime_list(default_prime_list)
-    # w_in_terminal(default_prime_list)
-    return print("\nDone_Success_prime_control")
+    look_in_terminal(default_prime_list)
+    return 0
 
 
 def save_prime_list(save_list: list):
     with open('saved_prime_list.pkl', 'wb') as temp_list:
         pickle.dump(save_list, temp_list)
 
-    return print("\nDone_Save_List")
+    return 0
 
 
 def load_prime_list(user_number) -> list or None:
-    current_directory = os.getcwd()
+    try:
+        current_directory = os.getcwd()
 
-    file_name = 'saved_prime_list.pkl'
-    file_path = os.path.join(current_directory, file_name)
+        file_name = 'saved_prime_list.pkl'
+        file_path = os.path.join(current_directory, file_name)
+    except Exception as ex:
+        raise print(f"{ex}")
 
     if os.path.exists(file_path):
         print(f"{file_name} file exists.")
