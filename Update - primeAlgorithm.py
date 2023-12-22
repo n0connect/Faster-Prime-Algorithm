@@ -39,7 +39,7 @@ def file_size_control() -> None:
     global last_digit_
 
     try:
-        print(f"_" * 50)  # FOR GOOD SEEN
+        print(f"_" * 50)  # Güzel bir görünüm için
         saved_files_list = os.listdir(os.getcwd())
         last_saved_file = sorted(saved_files_list)[-1]
         for file in saved_files_list:
@@ -167,7 +167,7 @@ def prime_control(user_numbers, loaded_list: list) -> str or bool:
             number = current_num_
 
         for prime_item in loaded_list:
-            # NOT PRİME
+            # ASAL DEĞİL
             if number % prime_item == 0:
                 if another_list_has_been_loaded_:
                     current_num_ = number + 2
@@ -178,7 +178,7 @@ def prime_control(user_numbers, loaded_list: list) -> str or bool:
             elif number in loaded_list:
                 break
 
-            # IS PRIME
+            # ASALDIR
             elif prime_item > math.sqrt(number + 10):
                 process_bar(number, user_numbers)
                 temporary_prime_list.append(number)
@@ -190,7 +190,7 @@ def prime_control(user_numbers, loaded_list: list) -> str or bool:
 
                 break
 
-            # LOAD ANOTHER LIST
+            # BAŞKA BİR LİSTE YÜKLE
             elif prime_item == loaded_list[-1]:
                 current_num_ = number
                 return True
