@@ -44,8 +44,7 @@ başlayacağım.
 
 def file_size_control() -> None:
     # Program ilk çalıştığında kaydedilen .pkl dosyalarını kontrol eder
-
-    global new_created_file_name_
+    global new_created_file_name_   # Oluşturulan yeni dosya ismidir, Aksi halde son dosya ismini alır
     global last_digit_
 
     try:
@@ -57,7 +56,7 @@ def file_size_control() -> None:
                 print(f"\nSaved Prime list {file}: {os.stat(file).st_size / (1024 ** 2)} MB")
                 print(f"_" * 60)
 
-        if 1 <= os.stat(last_saved_file).st_size:
+        if 1 <= os.stat(last_saved_file).st_size/(1024 ** 2):
             print(f"\n{last_saved_file:>30} size is max.")
             print(f"_" * 60)
             last_digit_ = remove_character_in_file_name(last_saved_file)
@@ -72,7 +71,6 @@ def file_size_control() -> None:
 
 def remove_character_in_file_name(last_saved_file) -> int:
     # Algoritma için gerekli adım
-
     digits = ''.join(filter(str.isdigit, last_saved_file))
     if digits:
         digits = int(digits)
@@ -93,8 +91,8 @@ def create_new_pkl_file_() -> None:
 
 
 def take_user_number() -> None:
-    global temp_user_number_
-    global start_number_
+    global temp_user_number_    # Kullanıcıdan alınan hesaplanacak son sayıdır
+    global start_number_    # Başlangıç sayıdır doğru belirlenmelidir aksi halde soruna yol açar
 
     print("""
     This program has been developed with a new algorithm to find prime numbers faster,
@@ -109,26 +107,27 @@ def take_user_number() -> None:
     try:
         start_number_ = int(input("Enter a ODD positive start number(default: number>=3): "))
         temp_user_number_ = int(input("Enter a ODD last number (default: number>=2000): "))
+        if start_number_ <= 0 or temp_user_number_ <= 0:
+            raise ValueError
     except ValueError as er:
         print(f"{er}")
-    except FileNotFoundError:
-        print("File not found.")
     except Exception as ex:
         print(f"{ex}")
 
 
 def load_with_this_value_prime_list():
-    global last_digit_
-    global another_list_has_been_set_
-    global set_zero_num_of_loaded_list_
-    global loaded_list
-    global temp_num_
+    global last_digit_  # Kaydedilen son .pkl dosyasının numarasını bellekte tutar
+    global another_list_has_been_set_   # Başka bir liste yüklenmişse True Alır Default:False
+    global set_zero_num_of_loaded_list_  # 0. listteyi yükler Default:False
+    global loaded_list  # Yüklenecek .pkl dosyasını bellekte tutar
+    global temp_num_    # Liste değerini bellekte tutar
 
     for temp_num in range(0, last_digit_ + 2, 1):
 
         if set_zero_num_of_loaded_list_:
-            temp_num = 0
+            set_zero_num_of_loaded_list_ = False
         if another_list_has_been_set_:
+            another_list_has_been_set_ = False
             temp_num = temp_num_
         try:
             with open(f'saved_prime_list{temp_num}.pkl', 'rb') as saved_file:
@@ -139,22 +138,13 @@ def load_with_this_value_prime_list():
             print("Please Delete Broken and Empty Files. And Restart The Program")
 
 
-def kill_the_program() -> list or str:
-    return print(":) boom")
-
-
 def prime_control() -> str or bool:
     global another_list_has_been_set_
-    global set_zero_num_of_loaded_list_
     global temporary_prime_list
     global loaded_list
     global start_number_
 
     for number in range(start_number_, temp_user_number_ + 2, 2):
-        if another_list_has_been_set_ or set_zero_num_of_loaded_list_:
-            another_list_has_been_set_ = False
-            set_zero_num_of_loaded_list_ = False
-
         for prime_item in loaded_list:
             # NOT PRİME
             if number % prime_item == 0:
@@ -196,9 +186,11 @@ def freshness_for_prime_control(condition: bool):
 def process_bar(number) -> None:
     # Stabil bir ProcessBar sağlar.
     global temp_user_number_
+    global temp_num_
 
     temp_time: int = 100 * ((number + 2) / temp_user_number_)
     sys.stdout.write(f"\rProgress: [{'#' * int(temp_time * 0.5)}] {temp_time:.2f}% Calculated number: {number}")
+    sys.stdout.write(f"Current Loaded list: saved_prime_list{temp_num_}.pkl")
     sys.stdout.flush()
 
 
@@ -214,24 +206,34 @@ def save_prime_list() -> None:
         print(f"{ex}")
 
 
-def done_job_and_give_all_prime_in_last_list() -> None:
-    global loaded_list
+def dump_terminal_all_file() -> None:
+    # Son kaydedşlen listeyi "dosyayı" yükler
+    global new_created_file_name_
+    global last_digit_
     counter: int = 0
-    for item in loaded_list:
-        counter = counter + 1
-        print(item, end="\n" if counter % 10 == 1 else ",")
+
+    for temp_num in range(0, last_digit_ + 2, 1):
+        try:
+            with open(f'saved_prime_list{temp_num}.pkl', 'rb') as dump_in_terminal:
+                dump_list = pickle.load(dump_in_terminal)
+                len_of_list = len(dump_list)
+                print(f"\nThe prime number at the top of the list: {dump_list[0]}")
+                print(f"The prime number in the middle of the list: {dump_list[int(len_of_list / 2)]}")
+                print(f"The prime number at the end of the list: {dump_list[-1]}")
+                print(f"the list contains {len_of_list} prime numbers\nWait 2 sec.")
+                time.sleep(2)
+                for item in dump_list:
+                    counter = counter + 1
+                    print(item, end="\n" if counter % 10 == 1 else ",")
+        except Exception as ex:
+            print(f"saved_prime_list{temp_num}.pkl file is not broken: {ex}")
+            print("Please Delete Broken and Empty Files. And Restart The Program")
+
     print("\nDone_Success_done_job_and_give_all_list_in_last_loaded_list")
 
 
-def information_about_loaded_list_file() -> None:
-    global loaded_list
-
-    len_of_list = len(loaded_list)
-    print(f"The prime number at the top of the list: {loaded_list[0]}")
-    print(f"The prime number in the middle of the list: {loaded_list[int(len_of_list / 2)]}")
-    print(f"The prime number at the end of the list: {loaded_list[-1]}")
-    print(f"the list contains {len_of_list} prime numbers")
-    time.sleep(2)
+def kill_the_program() -> list or str:
+    return print(":) boom")
 
 
 file_size_control()
@@ -239,6 +241,5 @@ take_user_number()
 load_with_this_value_prime_list()
 prime_control()
 save_prime_list()
-done_job_and_give_all_prime_in_last_list()
-information_about_loaded_list_file()
+dump_terminal_all_file()
 kill_the_program()
