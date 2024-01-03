@@ -45,22 +45,22 @@ def file_size_control() -> None:
 
     try:
         print(f"_" * 60)  # FOR GOOD SEEN
-        saved_files_list = os.listdir(os.getcwd())
-        last_saved_file = sorted(saved_files_list)[-1]
+        saved_files_list = os.listdir(os.getcwd())  # Dizinde ki dosyaları al
+        last_saved_file = sorted(saved_files_list)[-1]  # Kaydedilen .pkl son elemanı
         for file in saved_files_list:
-            if file.endswith('.pkl'):
-                print(f"\nSaved Prime list {file}: {os.stat(file).st_size / (1024 ** 2)} MB")
-                print(f"_" * 60)
+            if file.endswith('.pkl'):   # .pkl olanları seç
+                print(f"\nSaved Prime list {file}: {os.stat(file).st_size / (1024 ** 2)} MB")   # Boyut Kontrolü
+                print(f"_" * 60)    # Sadece görsellik için
 
-        if 1 <= os.stat(last_saved_file).st_size / (1024 ** 2):
+        if 1 <= os.stat(last_saved_file).st_size / (1024 ** 2):  # Boyutu 1MB fazla ise
             print(f"\n{last_saved_file:>30} size is max.")
             print(f"_" * 60)
-            last_digit_ = remove_character_in_file_name(last_saved_file)
-            new_created_file_name_ = f'saved_prime_list{last_digit_ + 1}.pkl'
-            create_new_pkl_file_()
+            last_digit_ = remove_character_in_file_name(last_saved_file)    # Son kaydedilen sayıyı al ör:5
+            new_created_file_name_ = f'saved_prime_list{last_digit_ + 1}.pkl'   # Yeni .pkl dosyası 6 olur
+            create_new_pkl_file_()  # yeni .pkl oluştur
         else:
-            last_digit_ = remove_character_in_file_name(last_saved_file)
-            new_created_file_name_ = f'{last_saved_file}'
+            last_digit_ = remove_character_in_file_name(last_saved_file)    # Son .pkl sayısını al ör:5
+            new_created_file_name_ = f'{last_saved_file}'   # Son .pkl ile işleme devam edilir ör:5
     except Exception as ex:
         raise print(f"{ex}")
 
@@ -76,7 +76,7 @@ def remove_character_in_file_name(last_saved_file) -> int:
 
 
 def create_new_pkl_file_() -> None:
-    # 1MB aşan dosya varsa bu fonksiyon üzerinden algoritmayı sürdürür
+    # 1MB aşan dosya varsa bu fonksiyon yeni bir .pkl oluşturur.
     global last_digit_
 
     try:
@@ -100,21 +100,23 @@ def take_user_number() -> None:
     in the list you calculated.
     
     """)
-    try:
-        start_number_ = int(input("Enter a ODD positive start number(default: number>=3): "))
-        user_end_number_ = int(input("Enter a ODD last number (default: number>=2001): "))
-        if start_number_ <= 0 or user_end_number_ <= 0:
-            raise ValueError
-        if start_number_ % 2 == 0 or user_end_number_ % 2 == 0:
-            raise print("Please Enter two ODD number.")
-    except ValueError as er:
-        print(f"{er}")
-    except Exception as ex:
-        print(f"{ex}")
+    while True:
+        try:
+            start_number_ = int(input("Enter a ODD positive start number(default: number>=3): "))
+            user_end_number_ = int(input("Enter a ODD last number (default: number>=2001): "))
+            if start_number_ <= 0 or user_end_number_ <= 0:
+                raise ValueError
+            if start_number_ % 2 == 0 or user_end_number_ % 2 == 0:
+                raise print("Please Enter two ODD number.")
+            break   # Eğer istenilen sayılar girilirse fonksiyonu bitir.
+        except ValueError as er:
+            print(f"{er}")
+        except Exception as ex:
+            print(f"{ex}")
 
 
 def approx_calculation_of_probability() -> None:
-    # Yaklaşık Asal Miktarı ve Yoğunluğu
+    # Yaklaşık Asal Miktarı ve Yoğunluğunu hesaplar
     global average_prime_number_quantity
     global density_of_primes_less_than_end_number
 
@@ -123,7 +125,7 @@ def approx_calculation_of_probability() -> None:
 
     print(f"Average prime number count until {user_end_number_}: {average_prime_number_quantity}")
     print(f"Density of prime less than {user_end_number_}: %{density_of_primes_less_than_end_number}")
-    time.sleep(3)
+    time.sleep(3)   # İncelenmek için 3sn bekler
 
 
 def load_with_this_value_prime_list():
@@ -157,29 +159,27 @@ def prime_control() -> str or bool:
 
     for number in range(start_number_, user_end_number_ + 2, 2):
         for prime_item in loaded_list:
-            # NOT PRİME
+            # Asal sayı olmadığı belirlenirse
             if number % prime_item == 0:
                 # OLASILIK HESABI İÇİN
-                for kills in loaded_list:
-                    if number % kills == 0:
-                        probability_of_primes(kills)
+                bridge_probability_of_primes(number)
                 # OLASILIK HESABI İÇİN
                 if another_list_has_been_set_:
                     freshness_for_prime_control(False)
                 break
-            # IS PRIME
+            # Zaten hesaplanmış bir asal sayı ise
             elif number in loaded_list:
                 break
-            # IS PRIME
+            # Yeni bir asal sayı ise
             elif prime_item > math.sqrt(number + 10):
                 process_bar(number)
                 temporary_prime_list.append(number)
                 if another_list_has_been_set_:
                     freshness_for_prime_control(False)
                 break
-            # LOAD ANOTHER LIST
+            # Asal kontrolü için yeni bir .pkl ihtiyaç varsa
             elif prime_item == loaded_list[-1]:
-                freshness_for_prime_control(True)
+                freshness_for_prime_control(True)   # Bu fonksiyon anahtar görevi görür
     print("\n")
     return ":)"
 
@@ -199,6 +199,14 @@ def freshness_for_prime_control(condition: bool):
         another_list_has_been_set_ = True
 
     load_with_this_value_prime_list()
+
+
+def bridge_probability_of_primes(the_number_to_calculate: int) -> None:
+    global loaded_list
+    # Asal olmayan sayıyı bölen başka asal sayılar varsa eğer
+    for kills in loaded_list:
+        if the_number_to_calculate % kills == 0:
+            probability_of_primes(kills)
 
 
 def probability_of_primes(fav_prime) -> None:
